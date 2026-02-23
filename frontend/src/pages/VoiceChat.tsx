@@ -1,11 +1,14 @@
-import { motion } from "framer-motion";
-import Navbar from "../components/Navbar";
-import { Send, Mic, Paperclip } from "lucide-react";
 import { useState } from "react";
+import CitizenLayout from "../components/CitizenLayout";
+import { motion } from "framer-motion";
+import { Mic, Send } from "lucide-react";
 
 export default function VoiceChat() {
   const [messages, setMessages] = useState([
-    { sender: "ai", text: "Hello. I'm here to help you report your incident safely. How can I assist you today?" }
+    {
+      sender: "ai",
+      text: "Hello. I'm here to assist you in filing your report. Please describe the incident in your own words.",
+    },
   ]);
 
   const [input, setInput] = useState("");
@@ -16,94 +19,90 @@ export default function VoiceChat() {
     setMessages([
       ...messages,
       { sender: "user", text: input },
-      { sender: "ai", text: "Thank you. I'm structuring your complaint. Please provide more details if necessary." }
+      {
+        sender: "ai",
+        text: "Thank you. Can you specify the location and approximate time of the incident?",
+      },
     ]);
 
     setInput("");
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A]">
-      <Navbar />
-
-      <div className="pt-32 px-6 max-w-4xl mx-auto">
+    <CitizenLayout>
+      <div className="max-w-4xl mx-auto">
 
         {/* Header */}
-        <div className="mb-6">
+        <div className="mb-8">
           <h1 className="text-2xl font-semibold">
-            AI Guided Reporting
+            AI-Guided Incident Reporting
           </h1>
-          <p className="text-sm text-[#64748B]">
-            Your conversation is secure and confidential.
+          <p className="text-sm text-gray-500 mt-2">
+            Your conversation is encrypted and confidential.
           </p>
         </div>
 
-        {/* Chat Container */}
-<div className="bg-white border border-gray-200 rounded-md overflow-hidden shadow-sm">
+        {/* Safe Mode Banner */}
+        <div className="bg-[#ECFDF5] border border-[#A7F3D0] text-[#065F46] p-4 rounded-md mb-6">
+          Safe Mode Enabled — This session is private and protected.
+        </div>
 
-  {/* Chat Header */}
-  <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-[#F1F5F9]">
-    <div className="flex items-center gap-3">
-      <div className="w-8 h-8 rounded-full bg-[#0F766E] text-white flex items-center justify-center text-sm font-semibold">
-        AI
-      </div>
-      <div>
-        <p className="text-sm font-medium">AI Reporting Assistant</p>
-        <p className="text-xs text-gray-500">Secure • Confidential • Guided</p>
-      </div>
-    </div>
+        {/* Chat Window */}
+        <div className="bg-white border border-gray-200 rounded-md p-6 h-[400px] overflow-y-auto space-y-4">
 
-    <span className="text-xs text-[#0F766E] font-medium">
-      Active Session
-    </span>
-  </div>
+          {messages.map((msg, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`flex ${
+                msg.sender === "user"
+                  ? "justify-end"
+                  : "justify-start"
+              }`}
+            >
+              <div
+                className={`max-w-xs px-4 py-3 rounded-lg text-sm ${
+                  msg.sender === "user"
+                    ? "bg-[#0F766E] text-white"
+                    : "bg-gray-100 text-gray-700"
+                }`}
+              >
+                {msg.text}
+              </div>
+            </motion.div>
+          ))}
 
-  {/* Messages */}
-  <div className="p-6 h-[420px] overflow-y-auto space-y-4 bg-[#F8FAFC]">
+        </div>
 
-    {messages.map((msg, index) => (
-      <motion.div
-        key={index}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className={`max-w-[70%] p-3 rounded-md text-sm ${
-          msg.sender === "user"
-            ? "ml-auto bg-gray-200"
-            : "bg-[#E6FFFA] border border-[#B2F5EA]"
-        }`}
-      >
-        {msg.text}
-      </motion.div>
-    ))}
+        {/* Input Area */}
+        <div className="flex items-center gap-3 mt-6">
+          <button className="p-3 bg-gray-100 rounded-md hover:bg-gray-200">
+            <Mic size={18} />
+          </button>
 
-  </div>
+          <input
+            type="text"
+            placeholder="Describe the incident..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-[#0F766E]"
+          />
 
-  {/* Input Area */}
-  <div className="px-6 py-4 border-t border-gray-200 bg-white flex items-center gap-3">
-    <button className="text-gray-400 hover:text-gray-600">
-      <Paperclip size={18} />
-    </button>
-    <input
-      type="text"
-      value={input}
-      onChange={(e) => setInput(e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && handleSend()}
-      placeholder="Describe your incident..."
-      className="flex-1 text-sm bg-[#F1F5F9] border border-gray-200 rounded-md px-4 py-2 outline-none focus:ring-1 focus:ring-[#0F766E]"
-    />
-    <button className="text-gray-400 hover:text-gray-600">
-      <Mic size={18} />
-    </button>
-    <button
-      onClick={handleSend}
-      className="bg-[#0F766E] text-white p-2 rounded-md hover:bg-[#0D6B64]"
-    >
-      <Send size={16} />
-    </button>
-  </div>
-</div>
+          <button
+            onClick={handleSend}
+            className="p-3 bg-[#0F766E] text-white rounded-md hover:bg-[#0D5E58]"
+          >
+            <Send size={18} />
+          </button>
+        </div>
+
+        {/* Footer Note */}
+        <div className="mt-6 text-xs text-gray-400">
+          In case of immediate danger, please contact emergency services directly.
+        </div>
 
       </div>
-    </div>
+    </CitizenLayout>
   );
 }

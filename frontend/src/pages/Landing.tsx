@@ -204,7 +204,7 @@ export default function Landing() {
               iconBg="bg-violet-50 text-violet-600"
               title="Officer Login"
               description="Secure access to the operational case management dashboard for law enforcement."
-              link="/login"
+              link="/officer/login"
               linkLabel="Officer Access"
               accentColor="#7C3AED"
               delay={0.3}

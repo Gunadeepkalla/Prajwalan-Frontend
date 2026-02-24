@@ -10,6 +10,8 @@ import OfficerDashboard from "./pages/OfficerDashboard";
 import OfficerCaseDetail from "./pages/OfficerCasedetail";
 import OfficerSettings from "./pages/OfficerSettings";
 import ComplaintDetail from "./pages/ComplaintDetail";
+import EvidenceStorage from "./pages/EvidenceStorage";
+import OfficerLogin from "./pages/OfficerLogin";
 
 function App() {
   return (
@@ -26,12 +28,12 @@ function App() {
         <Route path="/report" element={<VoiceChat />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/complaint/:id" element={<ComplaintDetail />} />
-
+        <Route path="/evidence" element={<EvidenceStorage />} />
         {/* Officer Routes */}
         <Route path="/officer" element={<OfficerDashboard />} />
         <Route path="/officer/case/:id" element={<OfficerCaseDetail />} />
         <Route path="/officer/settings" element={<OfficerSettings />} />
-
+        <Route path="/officer/login" element={<OfficerLogin />} />
       </Routes>
     </BrowserRouter>
   );

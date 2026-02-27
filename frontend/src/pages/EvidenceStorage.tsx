@@ -27,7 +27,7 @@ export default function EvidenceStorage() {
       </h1>
 
       {/* Upload Section */}
-      <div className="bg-white border border-gray-200 rounded-md p-6 mb-8 flex justify-between items-center">
+      <div className="bg-white border border-gray-200 rounded-md p-6 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <p className="font-medium">Upload Supporting Evidence</p>
           <p className="text-sm text-gray-500 mt-1">
@@ -35,7 +35,7 @@ export default function EvidenceStorage() {
           </p>
         </div>
 
-        <button className="flex items-center gap-2 px-5 py-2 bg-[#1E3A8A] text-white rounded-md hover:bg-[#1D4ED8]">
+        <button className="flex items-center gap-2 px-5 py-2 bg-[#1E3A8A] text-white rounded-md hover:bg-[#1D4ED8] w-full sm:w-auto justify-center">
           <Upload size={16} />
           Upload File
         </button>
@@ -54,7 +54,7 @@ export default function EvidenceStorage() {
           </p>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {evidenceList.map((file) => (
             <div
               key={file.id}

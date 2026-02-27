@@ -1,4 +1,6 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
@@ -10,32 +12,54 @@ import OfficerDashboard from "./pages/OfficerDashboard";
 import OfficerCaseDetail from "./pages/OfficerCasedetail";
 import OfficerSettings from "./pages/OfficerSettings";
 import ComplaintDetail from "./pages/ComplaintDetail";
-import EvidenceStorage from "./pages/EvidenceStorage";
 import OfficerLogin from "./pages/OfficerLogin";
+
+/* ── Route guards ─────────────────────────────────────────────────────────── */
+function CitizenRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  return user ? <>{children}</> : <Navigate to="/login" replace />;
+}
+
+function OfficerRoute({ children }: { children: React.ReactNode }) {
+  const { policeUser, loading } = useAuth();
+  if (loading) return null;
+  return policeUser ? <>{children}</> : <Navigate to="/officer/login" replace />;
+}
+
+function AppRoutes() {
+  return (
+    <Routes>
+      {/* Public */}
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/officer/login" element={<OfficerLogin />} />
+
+      {/* Citizen Protected */}
+      <Route path="/dashboard" element={<CitizenRoute><UserDashboard /></CitizenRoute>} />
+      <Route path="/report" element={<CitizenRoute><VoiceChat /></CitizenRoute>} />
+      <Route path="/settings" element={<CitizenRoute><Settings /></CitizenRoute>} />
+      <Route path="/complaint/:id" element={<CitizenRoute><ComplaintDetail /></CitizenRoute>} />
+
+      {/* Officer Protected */}
+      <Route path="/officer" element={<OfficerRoute><OfficerDashboard /></OfficerRoute>} />
+      <Route path="/officer/case/:id" element={<OfficerRoute><OfficerCaseDetail /></OfficerRoute>} />
+      <Route path="/officer/settings" element={<OfficerRoute><OfficerSettings /></OfficerRoute>} />
+
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-
-        {/* Public Routes */}
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-
-        {/* Citizen Routes */}
-        <Route path="/dashboard" element={<UserDashboard />} />
-        <Route path="/report" element={<VoiceChat />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/complaint/:id" element={<ComplaintDetail />} />
-        <Route path="/evidence" element={<EvidenceStorage />} />
-        {/* Officer Routes */}
-        <Route path="/officer" element={<OfficerDashboard />} />
-        <Route path="/officer/case/:id" element={<OfficerCaseDetail />} />
-        <Route path="/officer/settings" element={<OfficerSettings />} />
-        <Route path="/officer/login" element={<OfficerLogin />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

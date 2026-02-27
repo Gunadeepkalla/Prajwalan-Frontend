@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import CitizenLayout from "../components/CitizenLayout";
+import { useNavigate } from "react-router-dom";
+import api from "../lib/api";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Mic,
@@ -49,42 +51,78 @@ function Waveform() {
   );
 }
 
-const AI_REPLIES = [
-  "Thank you. Can you specify the location and approximate time of the incident?",
-  "Understood. Were there any witnesses present at the scene?",
-  "I've noted that. Do you have any supporting evidence such as photos or video?",
-  "Your report has been registered. A case officer will follow up within 24 hours.",
-];
-
 export default function VoiceChat() {
-  const [messages, setMessages] = useState<{ sender: string; text: string }[]>([
-    {
-      sender: "ai",
-      text: "Hello. I'm your AI-guided incident reporting assistant. Please describe the incident in your own words — I'll help you file an accurate report.",
-    },
-  ]);
+  const navigate = useNavigate();
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<{ sender: string; text: string }[]>([]);
   const [input, setInput] = useState("");
   const [micActive, setMicActive] = useState(false);
   const [typing, setTyping] = useState(false);
-  const replyIndex = useRef(0);
+  const [isComplete, setIsComplete] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [trackingId, setTrackingId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  /* ── Start session on mount ── */
+  useEffect(() => {
+    let cancelled = false;
+    api.post("/api/complaints/start-session", { language: "en", isAnonymous: false })
+      .then((res) => {
+        if (cancelled) return;
+        setSessionId(res.data.sessionId);
+        if (res.data.greeting) {
+          setMessages([{ sender: "ai", text: res.data.greeting }]);
+        } else {
+          setMessages([{ sender: "ai", text: "Hello. I'm your AI-guided incident reporting assistant. Please describe the incident in your own words." }]);
+        }
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setMessages([{ sender: "ai", text: "Hello. I'm your AI-guided incident reporting assistant. Please describe the incident in your own words." }]);
+      });
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, typing]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const handleSend = async () => {
+    if (!input.trim() || typing) return;
     const userText = input.trim();
     setInput("");
     setMessages((prev) => [...prev, { sender: "user", text: userText }]);
     setTyping(true);
-    setTimeout(() => {
+    try {
+      const res = await api.post("/api/complaints/chat", {
+        sessionId,
+        message: userText,
+        language: "en",
+      });
+      const { response, isComplete: done } = res.data;
+      setMessages((prev) => [...prev, { sender: "ai", text: response }]);
+      if (done) setIsComplete(true);
+    } catch {
+      setMessages((prev) => [...prev, { sender: "ai", text: "Sorry, something went wrong. Please try again." }]);
+    } finally {
       setTyping(false);
-      const reply = AI_REPLIES[replyIndex.current % AI_REPLIES.length];
-      replyIndex.current += 1;
-      setMessages((prev) => [...prev, { sender: "ai", text: reply }]);
-    }, 1600);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!sessionId) return;
+    setSubmitting(true);
+    try {
+      const res = await api.post("/api/complaints/submit", { sessionId });
+      const tid = res.data.complaint?.trackingId ?? res.data.trackingId;
+      setTrackingId(tid);
+      setMessages((prev) => [...prev, { sender: "ai", text: `Your complaint has been submitted. Tracking ID: ${tid}` }]);
+      setTimeout(() => navigate("/dashboard"), 3000);
+    } catch {
+      setMessages((prev) => [...prev, { sender: "ai", text: "Submission failed. Please try again." }]);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleKey = (e: React.KeyboardEvent) => {
@@ -129,7 +167,7 @@ export default function VoiceChat() {
 
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-xl font-bold tracking-tight">AI-Guided Incident Reporting</h1>
+                <h1 className="text-base sm:text-xl font-bold tracking-tight">AI-Guided Incident Reporting</h1>
                 <span className="flex items-center gap-1 text-[10px] font-semibold bg-white/20 px-2 py-0.5 rounded-full">
                   <Zap size={10} /> LIVE
                 </span>
@@ -170,7 +208,7 @@ export default function VoiceChat() {
           </div>
 
           {/* messages */}
-          <div className="p-5 h-[360px] overflow-y-auto space-y-4 bg-[#fafafa]">
+          <div className="p-3 sm:p-5 h-[320px] sm:h-[360px] overflow-y-auto space-y-4 bg-[#fafafa]">
             <AnimatePresence initial={false}>
               {messages.map((msg, idx) => (
                 <motion.div
@@ -188,7 +226,7 @@ export default function VoiceChat() {
                   )}
 
                   <div
-                    className={`max-w-xs md:max-w-sm px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
+                    className={`max-w-[80%] sm:max-w-sm px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
                       msg.sender === "user"
                         ? "bg-gradient-to-br from-[#0F766E] to-[#0e6b7c] text-white rounded-br-sm"
                         : "bg-white text-gray-700 border border-gray-100 rounded-bl-sm"
@@ -269,7 +307,8 @@ export default function VoiceChat() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKey}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400/40 focus:border-teal-400 transition-all"
+                    disabled={isComplete}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400/40 focus:border-teal-400 transition-all disabled:opacity-50"
                   />
                 )}
               </div>
@@ -277,12 +316,40 @@ export default function VoiceChat() {
               {/* send */}
               <button
                 onClick={handleSend}
-                disabled={!input.trim() && !micActive}
+                disabled={(!input.trim() && !micActive) || isComplete || typing}
                 className="w-11 h-11 rounded-full bg-gradient-to-br from-[#0F766E] to-[#0e6b7c] text-white flex items-center justify-center shadow-sm hover:shadow-teal-200 hover:shadow-md transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <Send size={16} />
               </button>
             </div>
+
+            {/* Submit CTA when conversation is complete */}
+            {isComplete && !trackingId && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-4 flex justify-center"
+              >
+                <button
+                  onClick={handleSubmit}
+                  disabled={submitting}
+                  className="flex items-center gap-2 px-7 py-3 rounded-xl bg-[#0F766E] text-white font-semibold text-sm hover:bg-[#0D5E58] transition shadow-sm disabled:opacity-60"
+                >
+                  {submitting ? (
+                    <><ShieldCheck size={16} className="animate-pulse" /> Submitting…</>
+                  ) : (
+                    <><ShieldCheck size={16} /> Submit Report</>
+                  )}
+                </button>
+              </motion.div>
+            )}
+
+            {trackingId && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                className="mt-4 text-center text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl px-5 py-3">
+                ✓ Complaint submitted. Tracking ID: <span className="font-mono font-bold">{trackingId}</span>. Redirecting…
+              </motion.div>
+            )}
           </div>
         </SpotlightCard>
 

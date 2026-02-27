@@ -1,0 +1,20 @@
+{
+  "name": "prajwalan",
+  "version": "1.0.0",
+  "description": "Prajwalan – Agentic AI Complaint Intake System (monorepo root)",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --names \"BACKEND,FRONTEND\" --prefix-colors \"cyan,magenta\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend/backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "install:all": "npm install && cd backend/backend && npm install && cd ../../frontend && npm install",
+    "build:frontend": "cd frontend && npm run build",
+    "prisma:migrate": "cd backend/backend && npx prisma migrate dev",
+    "prisma:generate": "cd backend/backend && npx prisma generate",
+    "prisma:studio": "cd backend/backend && npx prisma studio",
+    "prisma:seed": "cd backend/backend && node prisma/seed.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

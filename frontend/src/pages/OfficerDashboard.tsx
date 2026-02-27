@@ -1,6 +1,7 @@
 import OfficerLayout from "../components/OfficerLayout";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../lib/api";
 import { motion } from "framer-motion";
 import {
   ShieldCheck,
@@ -16,14 +17,17 @@ import AnimatedCounter from "../components/ui/AnimatedCounter";
 
 /* ── priority / status pill config ── */
 const PRIORITY_PILL: Record<string, string> = {
-  High:   "bg-red-100   text-red-700   border border-red-200",
-  Medium: "bg-amber-100 text-amber-700 border border-amber-200",
-  Low:    "bg-green-100 text-green-700 border border-green-200",
+  HIGH:     "bg-red-100   text-red-700   border border-red-200",
+  CRITICAL: "bg-rose-100  text-rose-700  border border-rose-200",
+  MEDIUM:   "bg-amber-100 text-amber-700 border border-amber-200",
+  LOW:      "bg-green-100 text-green-700 border border-green-200",
 };
 const STATUS_PILL: Record<string, string> = {
-  Open:       "bg-blue-100  text-blue-700  border border-blue-200",
-  "In Progress": "bg-violet-100 text-violet-700 border border-violet-200",
-  Resolved:   "bg-emerald-100 text-emerald-700 border border-emerald-200",
+  SUBMITTED:    "bg-blue-100   text-blue-700   border border-blue-200",
+  INVESTIGATING: "bg-yellow-100 text-yellow-700 border border-yellow-200",
+  IN_PROGRESS:  "bg-violet-100 text-violet-700 border border-violet-200",
+  RESOLVED:     "bg-emerald-100 text-emerald-700 border border-emerald-200",
+  CLOSED:       "bg-gray-100   text-gray-600   border border-gray-200",
 };
 
 function CaseRow({ id, type, priority, status, date, evidenceCount, index }: any) {
@@ -101,28 +105,41 @@ export default function OfficerDashboard() {
   const [cases, setCases] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("All");
+  const [metrics, setMetrics] = useState<Record<string, number>>({
+    total: 0, highPriority: 0, openCases: 0, resolved: 0,
+  });
 
   useEffect(() => {
-    setTimeout(() => {
-      setCases([]);
-      setLoading(false);
-    }, 1000);
+    api.get("/api/police/dashboard")
+      .then((res) => {
+        const s = res.data.stats ?? {};
+        setMetrics({
+          total:       s.total       ?? 0,
+          highPriority: s.highPriority ?? 0,
+          openCases:   (s.pending ?? 0) + (s.inProgress ?? 0),
+          resolved:    s.resolved    ?? 0,
+        });
+        const mapped = (res.data.recentComplaints ?? []).map((c: any) => ({
+          id:            c.trackingId,
+          type:          c.incidentType?.replace(/_/g, " ") ?? "Unknown",
+          priority:      c.priorityLevel ?? "LOW",
+          status:        c.status ?? "SUBMITTED",
+          date:          c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "—",
+          evidenceCount: c._count?.evidences ?? 0,
+        }));
+        setCases(mapped);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const filteredCases = cases.filter((c) => {
-    if (filter === "All") return true;
-    if (filter === "High") return c.priority === "High";
-    if (filter === "Open") return c.status === "Open";
-    if (filter === "Resolved") return c.status === "Resolved";
+    if (filter === "All")      return true;
+    if (filter === "High")     return c.priority === "HIGH" || c.priority === "CRITICAL";
+    if (filter === "Open")     return c.status === "SUBMITTED" || c.status === "INVESTIGATING" || c.status === "IN_PROGRESS";
+    if (filter === "Resolved") return c.status === "RESOLVED" || c.status === "CLOSED";
     return true;
   });
-
-  const metrics: Record<string, number> = {
-    total: cases.length,
-    highPriority: cases.filter((c) => c.priority === "High").length,
-    openCases: cases.filter((c) => c.status === "Open").length,
-    resolved: cases.filter((c) => c.status === "Resolved").length,
-  };
 
   return (
     <OfficerLayout>
@@ -146,13 +163,13 @@ export default function OfficerDashboard() {
             />
           ))}
 
-          <div className="relative flex items-start gap-4">
+          <div className="relative flex flex-col sm:flex-row items-start gap-4">
             <div className="w-12 h-12 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
               <ShieldCheck size={22} className="text-white" />
             </div>
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-xl font-bold tracking-tight">Operational Command Dashboard</h1>
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <h1 className="text-lg sm:text-xl font-bold tracking-tight">Operational Command Dashboard</h1>
                 <span className="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" />
                   LIVE
@@ -205,7 +222,7 @@ export default function OfficerDashboard() {
         {!loading && cases.length > 0 && (
           <>
             {/* Metric Cards */}
-            <div className="grid md:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
               {METRIC_CONFIG.map((cfg, i) => (
                 <motion.div
                   key={cfg.key}
@@ -260,7 +277,7 @@ export default function OfficerDashboard() {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left">
+                <table className="w-full text-sm text-left min-w-[600px]">
                   <thead>
                     <tr className="text-xs font-semibold text-slate-400 uppercase tracking-wide bg-slate-50/60">
                       <th className="py-3 px-4">Case ID</th>

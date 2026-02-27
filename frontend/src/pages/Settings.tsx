@@ -22,7 +22,7 @@ export default function Settings() {
             <Input label="Mobile Number" placeholder="Enter mobile number" />
           </div>
 
-          <button className="mt-6 px-6 py-2 bg-[#0F766E] text-white rounded-md hover:bg-[#0D5E58]">
+          <button className="mt-6 px-6 py-2 bg-[#0F766E] text-white rounded-md hover:bg-[#0D5E58] w-full sm:w-auto">
             Save Changes
           </button>
         </div>
@@ -33,14 +33,14 @@ export default function Settings() {
 
           <Input label="New Password" type="password" placeholder="Enter new password" />
 
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <span className="text-sm text-gray-600">
               Enable Two-Factor Authentication
             </span>
-            <input type="checkbox" className="accent-[#0F766E]" />
+            <input type="checkbox" className="accent-[#0F766E] w-4 h-4" />
           </div>
 
-          <button className="mt-6 px-6 py-2 bg-[#0F766E] text-white rounded-md hover:bg-[#0D5E58]">
+          <button className="mt-6 px-6 py-2 bg-[#0F766E] text-white rounded-md hover:bg-[#0D5E58] w-full sm:w-auto">
             Update Security
           </button>
         </div>
@@ -60,7 +60,7 @@ export default function Settings() {
               </select>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <span className="text-sm text-gray-600">
                 Receive Email Notifications
               </span>
@@ -68,13 +68,13 @@ export default function Settings() {
                 type="checkbox"
                 checked={notifications}
                 onChange={() => setNotifications(!notifications)}
-                className="accent-[#0F766E]"
+                className="accent-[#0F766E] w-4 h-4"
               />
             </div>
 
           </div>
 
-          <button className="mt-6 px-6 py-2 bg-[#0F766E] text-white rounded-md hover:bg-[#0D5E58]">
+          <button className="mt-6 px-6 py-2 bg-[#0F766E] text-white rounded-md hover:bg-[#0D5E58] w-full sm:w-auto">
             Save Preferences
           </button>
         </div>

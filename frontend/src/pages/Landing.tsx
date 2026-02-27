@@ -39,7 +39,7 @@ export default function Landing() {
 
       {/* ══ HERO — light with soft blobs ══ */}
       <section
-        className="relative min-h-screen flex flex-col justify-center text-[#111827] px-6 pt-32 pb-24"
+        className="relative min-h-screen flex flex-col justify-center text-[#111827] px-4 sm:px-6 pt-24 md:pt-32 pb-20"
         style={{
           background:
             "linear-gradient(150deg, #EEF4FF 0%, #F5F8FF 40%, #FDF6EE 100%)",
@@ -72,7 +72,7 @@ export default function Landing() {
           </motion.div>
 
           {/* headline */}
-          <h1 className="text-5xl md:text-7xl font-bold leading-[1.07] tracking-tight max-w-4xl">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold leading-[1.07] tracking-tight max-w-4xl">
             <BlurText text="Report Safely." delay={0.06} />
             <br />
             <BlurText text="Be Heard." delay={0.06} className="text-[#6B7280]" />
@@ -95,10 +95,10 @@ export default function Landing() {
           </motion.p>
 
           {/* CTAs */}
-          <motion.div {...fadeUp(1)} className="mt-10 flex flex-wrap gap-4">
+          <motion.div {...fadeUp(1)} className="mt-10 flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
             <Link
               to="/report"
-              className="group relative inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-white overflow-hidden"
+              className="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-white overflow-hidden w-full sm:w-auto"
               style={{
                 background: "linear-gradient(135deg,#2355D4 0%,#1D4ED8 100%)",
                 boxShadow: "0 0 28px rgba(35,85,212,0.55)",
@@ -110,7 +110,7 @@ export default function Landing() {
             </Link>
             <Link
               to="/dashboard"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold border border-[#CBD5E1] text-[#374151] hover:border-[#2355D4] hover:text-[#2355D4] hover:bg-blue-50 transition-all duration-200"
+              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-semibold border border-[#CBD5E1] text-[#374151] hover:border-[#2355D4] hover:text-[#2355D4] hover:bg-blue-50 transition-all duration-200 w-full sm:w-auto"
             >
               <Search size={17} />
               Access Dashboard
@@ -150,9 +150,9 @@ export default function Landing() {
       {/* ══ TRUST STRIP ══ */}
       <section
         style={{ background: "linear-gradient(135deg,#1B3A6B 0%,#2355D4 100%)" }}
-        className="text-white py-12"
+        className="text-white py-10 md:py-12"
       >
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center">
           {[
             { icon: <Lock size={22} />, label: "End-to-End Encrypted" },
             { icon: <EyeOff size={22} />, label: "Anonymous Filing" },
@@ -168,17 +168,17 @@ export default function Landing() {
       </section>
 
       {/* ══ QUICK ACCESS CARDS ══ */}
-      <section className="bg-[#F8F5F0] py-24 px-6">
+      <section className="bg-[#F8F5F0] py-16 md:py-24 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
-          <motion.div {...fadeUp(0)} className="text-center mb-14">
+          <motion.div {...fadeUp(0)} className="text-center mb-10 md:mb-14">
             <p className="text-xs font-bold tracking-widest uppercase text-[#E06426] mb-3">
               Quick Access
             </p>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#111827]">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#111827]">
               What would you like to do?
             </h2>
           </motion.div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <QuickCard
               icon={<FilePlus2 size={22} />}
               iconBg="bg-blue-50 text-[#2355D4]"
@@ -214,13 +214,13 @@ export default function Landing() {
       </section>
 
       {/* ══ WHY SECTION ══ */}
-      <section className="bg-white py-24 px-6">
+      <section className="bg-white py-16 md:py-24 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
-          <motion.div {...fadeUp(0)} className="text-center mb-14">
+          <motion.div {...fadeUp(0)} className="text-center mb-10 md:mb-14">
             <p className="text-xs font-bold tracking-widest uppercase text-[#2355D4] mb-3">
               The Problem
             </p>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#111827]">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#111827]">
               Why Many Incidents Go Unreported
             </h2>
             <p className="mt-4 text-[#6B7280] text-sm max-w-xl mx-auto leading-relaxed">
@@ -228,7 +228,7 @@ export default function Landing() {
               up — and how we break them.
             </p>
           </motion.div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <ProblemCard
               icon={<EyeOff size={20} />}
               accent="#E06426"
@@ -255,20 +255,20 @@ export default function Landing() {
       </section>
 
       {/* ══ HOW IT WORKS ══ */}
-      <section className="bg-[#F8F5F0] py-24 px-6">
+      <section className="bg-[#F8F5F0] py-16 md:py-24 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
-          <motion.div {...fadeUp(0)} className="text-center mb-14">
+          <motion.div {...fadeUp(0)} className="text-center mb-10 md:mb-14">
             <p className="text-xs font-bold tracking-widest uppercase text-[#E06426] mb-3">
               Simple Process
             </p>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#111827]">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#111827]">
               Simple, Guided Process
             </h2>
             <p className="mt-4 text-[#6B7280] text-sm max-w-xl mx-auto leading-relaxed">
               Three clear steps — that's all it takes to safely connect with the right authority.
             </p>
           </motion.div>
-          <div className="grid md:grid-cols-3 gap-6 relative">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
             {/* connector line */}
             <div
               aria-hidden
@@ -304,11 +304,11 @@ export default function Landing() {
       </section>
 
       {/* ══ CTA BANNER ══ */}
-      <section className="py-20 px-6 bg-white">
+      <section className="py-14 md:py-20 px-4 sm:px-6 bg-white">
         <div className="max-w-4xl mx-auto">
           <motion.div
             {...fadeUp(0)}
-            className="relative rounded-3xl overflow-hidden px-10 py-16 text-center"
+            className="relative rounded-3xl overflow-hidden px-5 sm:px-8 md:px-10 py-10 md:py-16 text-center"
             style={{
               background: "linear-gradient(150deg,#EEF4FF 0%,#E8EDFF 50%,#F5F0FF 100%)",
               border: "1px solid #D4DEF8",
@@ -323,7 +323,7 @@ export default function Landing() {
               <span className="inline-block text-xs font-bold tracking-widest uppercase text-[#2355D4] mb-4">
                 Ready to act?
               </span>
-              <h2 className="text-3xl md:text-5xl font-extrabold leading-tight text-[#111827]">
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold leading-tight text-[#111827]">
                 Your voice matters.
                 <br />
                 <span className="bg-gradient-to-r from-[#E06426] to-[#F59E0B] bg-clip-text text-transparent">Make it heard.</span>
@@ -332,10 +332,10 @@ export default function Landing() {
                 Join thousands of citizens using our secure platform to connect
                 with law enforcement — quickly, confidentially, and without fear.
               </p>
-              <div className="mt-8 flex flex-wrap justify-center gap-4">
+              <div className="mt-8 flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
                 <Link
                   to="/signup"
-                  className="px-8 py-3.5 rounded-xl font-semibold text-white hover:-translate-y-0.5 transition-all duration-200"
+                  className="px-8 py-3.5 rounded-xl font-semibold text-white hover:-translate-y-0.5 transition-all duration-200 text-center"
                   style={{
                     background: "linear-gradient(135deg,#2355D4,#1D4ED8)",
                     boxShadow: "0 4px 18px rgba(35,85,212,0.35)",
@@ -345,8 +345,8 @@ export default function Landing() {
                 </Link>
                 <Link
                   to="/login"
-                  className="px-8 py-3.5 rounded-xl font-semibold border border-[#CBD5E1] text-[#374151] hover:border-[#2355D4] hover:text-[#2355D4] hover:bg-white transition-all duration-200"
-                >
+                  className="px-8 py-3.5 rounded-xl font-semibold border border-[#CBD5E1] text-[#374151] hover:border-[#2355D4] hover:text-[#2355D4] hover:bg-white transition-all duration-200 text-center">
+                
                   Sign In
                 </Link>
               </div>
@@ -356,7 +356,7 @@ export default function Landing() {
       </section>
 
       {/* ══ FOOTER ══ */}
-      <footer className="bg-[#F1F5F9] text-[#4B5563] px-6 py-16 border-t border-[#E2E8F0]">
+      <footer className="bg-[#F1F5F9] text-[#4B5563] px-4 sm:px-6 py-12 md:py-16 border-t border-[#E2E8F0]">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between gap-10 pb-10 border-b border-[#E2E8F0]">
             <div>
@@ -374,7 +374,7 @@ export default function Landing() {
                 to law enforcement through secure digital infrastructure.
               </p>
             </div>
-            <div className="flex flex-wrap gap-12 text-sm">
+            <div className="flex flex-wrap gap-8 sm:gap-12 text-sm">
               <div className="flex flex-col gap-3">
                 <span className="text-[#111827] font-bold text-xs uppercase tracking-wider">
                   Platform

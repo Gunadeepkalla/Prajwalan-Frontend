@@ -99,7 +99,7 @@ export default function OfficerSettings() {
           />
         </Section>
 
-        <button className="px-6 py-2 bg-[#14B8A6] text-black rounded-md">
+        <button className="px-6 py-2 bg-[#14B8A6] text-black rounded-md w-full sm:w-auto">
           Save Configuration
         </button>
 
@@ -121,13 +121,13 @@ function Section({ title, children }: any) {
 
 function Toggle({ label, value, onChange }: any) {
   return (
-    <div className="flex justify-between items-center">
-      <span className="text-gray-300">{label}</span>
+    <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+      <span className="text-gray-300 text-sm">{label}</span>
       <input
         type="checkbox"
         checked={value}
         onChange={onChange}
-        className="accent-[#14B8A6]"
+        className="accent-[#14B8A6] w-4 h-4"
       />
     </div>
   );
@@ -135,13 +135,13 @@ function Toggle({ label, value, onChange }: any) {
 
 function InputNumber({ label, value, onChange }: any) {
   return (
-    <div className="flex justify-between items-center">
-      <span className="text-gray-300">{label}</span>
+    <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+      <span className="text-gray-300 text-sm">{label}</span>
       <input
         type="number"
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="bg-[#1F2937] border border-[#374151] rounded-md px-3 py-2 w-32 text-white"
+        className="bg-[#1F2937] border border-[#374151] rounded-md px-3 py-2 w-full sm:w-28 text-white text-sm"
       />
     </div>
   );
